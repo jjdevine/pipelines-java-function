@@ -23,7 +23,7 @@ steps:
 
 variables:
   # Azure service connection established during pipeline creation
-  azureSubscription: <Name of your Azure subscription>
+  azureSubscription: 'Azure Portal - MPN Subscription'
   appName: 'java-function'
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
