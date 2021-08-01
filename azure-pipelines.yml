@@ -22,10 +22,26 @@ steps:
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
     goals: 'package'
 
-- task: AzureFunctionApp@1
+- task: CopyFiles@2
   inputs:
+    SourceFolder: '${system.defaultworkingdirectory}'
+    Contents: '**/azure-functions/**'
+    TargetFolder: '${build.artifactstagingdirectory}'
+    
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(build.artifactstagingdirectory)/target/azure-functions/first-pipeline-function'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+    replaceExistingArchive: true
+    
+- task: AzureRmWebAppDeployment@4
+  inputs:
+    ConnectionType: 'AzureRM'
     azureSubscription: 'Azure Portal - MPN Subscription'
     appType: 'functionApp'
-    appName: 'first-pipeline-function'
-    package: '$(System.DefaultWorkingDirectory)/**/*.jar'
-    deploymentMethod: 'auto'
+    WebAppName: 'first-pipeline-function'
+    packageForLinux: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+    enableCustomDeployment: true
+    DeploymentType: 'runFromZip'
